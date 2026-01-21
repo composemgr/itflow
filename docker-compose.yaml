@@ -1,0 +1,64 @@
+# nginx proxy address - http://172.17.0.1:62068
+
+name: itflow
+x-logging: &default-logging
+  options:
+    max-size: '5m'
+    max-file: '1'
+  driver: json-file
+
+services:
+  app:
+    image: itfloworg/itflow:latest
+    container_name: itflow-app
+    hostname: ${BASE_HOST_NAME:-$HOSTNAME}
+    restart: always
+    pull_policy: always
+    logging: *default-logging
+    environment:
+      TZ: ${TZ:-America/New_York}
+      CONTAINER_NAME: itflow-app
+      HOSTNAME: ${BASE_HOST_NAME:-$HOSTNAME}
+      ITFLOW_PORT: 8080
+      ITFLOW_URL: ${BASE_HOST_NAME:-$HOSTNAME}
+      ITFLOW_LOG_LEVEL: warn
+      ITFLOW_DB_HOST: itflow-db
+      ITFLOW_DB_PASS: ${DB_USER_PASS:-changeme_db_password}
+      ITFLOW_REPO_BRANCH: master
+      ITFLOW_REPO: github.com/itflow-org/itflow
+    ports:
+      - '172.17.0.1:62068:8080'
+    volumes:
+      - './rootfs/data/itflow:/var/www/localhost/htdocs:z'
+    depends_on:
+      - db
+    healthcheck:
+      test: ['CMD-SHELL', 'nc -z 127.0.0.1 8080 || exit 1']
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 90s
+    networks:
+      - itflow
+  db:
+    image: mariadb:11.4-noble
+    container_name: itflow-db
+    hostname: itflow-db
+    restart: always
+    pull_policy: always
+    logging: *default-logging
+    environment:
+      TZ: ${TZ:-America/New_York}
+      MARIADB_DATABASE: ${DB_CREATE_DATABASE_NAME:-itflow}
+      MARIADB_USER: ${DB_USER_NAME:-itflowuser}
+      MARIADB_PASSWORD: ${DB_USER_PASS:-changeme_db_password}
+      MARIADB_RANDOM_ROOT_PASSWORD: true
+    volumes:
+      - './rootfs/db/mariadb/itflow:/var/lib/mysql:rw'
+    networks:
+      - itflow
+
+networks:
+  itflow:
+    name: itflow
+    external: false
