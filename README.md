@@ -51,8 +51,8 @@ See `docker-compose.yaml` for complete list of configurable options.
 
 ## 📂 Volumes
 
-- `./rootfs/data/itflow` - Data storage
-- `./rootfs/data/db/mariadb/itflow` - Data storage
+- `./volumes/data/itflow` - Data storage
+- `./volumes/data/db/mariadb/itflow` - Data storage
 
 ## 🔐 Security
 
