@@ -29,7 +29,7 @@ services:
     ports:
       - '172.17.0.1:62068:8080'
     volumes:
-      - './rootfs/data/itflow:/var/www/localhost/htdocs:z'
+      - './volumes/data/itflow:/var/www/localhost/htdocs:z'
     depends_on:
       - db
     healthcheck:
@@ -54,7 +54,7 @@ services:
       MARIADB_PASSWORD: ${DB_USER_PASS:-changeme_db_password}
       MARIADB_RANDOM_ROOT_PASSWORD: true
     volumes:
-      - './rootfs/data/db/mariadb/itflow:/var/lib/mysql:rw'
+      - './volumes/data/db/mariadb/itflow:/var/lib/mysql:rw'
     networks:
       - itflow
 
