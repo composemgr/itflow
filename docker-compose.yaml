@@ -41,7 +41,7 @@ services:
     networks:
       - itflow
   db:
-    image: mariadb:11.4-noble
+    image: mariadb:latest
     container_name: itflow-db
     hostname: itflow-db
     restart: always
