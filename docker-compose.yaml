@@ -19,6 +19,7 @@ services:
       TZ: ${TZ:-America/New_York}
       CONTAINER_NAME: itflow-app
       HOSTNAME: ${BASE_HOST_NAME:-$HOSTNAME}
+      ITFLOW_NAME: ${APP_ORG_NAME:-ITFlow}
       ITFLOW_PORT: 8080
       ITFLOW_URL: ${BASE_HOST_NAME:-$HOSTNAME}
       ITFLOW_LOG_LEVEL: warn
@@ -69,7 +70,7 @@ services:
     environment:
       TZ: ${TZ:-America/New_York}
       MARIADB_DATABASE: ${DB_CREATE_DATABASE_NAME:-itflow}
-      MARIADB_USER: ${DB_USER_NAME:-itflowuser}
+      MARIADB_USER: itflow
       MARIADB_PASSWORD: ${DB_USER_PASS:-changeme_db_password}
       MARIADB_RANDOM_ROOT_PASSWORD: true
       CONTAINER_NAME: itflow-db
