@@ -40,6 +40,25 @@ services:
       start_period: 90s
     networks:
       - itflow
+      - proxy
+      - cloudflare
+    labels:
+      - 'traefik.enable=true'
+      - 'cloudflare.enable=true'
+      - 'traefik.docker.network=proxy'
+      - 'cloudflare.service=http://itflow-app:8080'
+      - 'cloudflare.hostname=itflow.${CLOUDFLARE_ZONE_NAME:-}'
+      - 'traefik.http.routers.itflow-app.entrypoints=http'
+      - 'traefik.http.routers.itflow-app-secure.tls=true'
+      - 'traefik.http.routers.itflow-app.rule=Host($(${BASE_HOST_NAME:-$HOSTNAME}))'
+      - 'traefik.http.middlewares.itflow-app-https-redirect.redirectscheme.scheme=https'
+      - 'traefik.http.routers.itflow-app.middlewares=itflow-app-https-redirect'
+      - 'traefik.http.routers.itflow-app-secure.entrypoints=https'
+      - 'traefik.http.routers.itflow-app-secure.rule=Host($(${BASE_HOST_NAME:-$HOSTNAME}))'
+      - 'traefik.http.routers.itflow-app-secure.tls.certresolver=cloudflare'
+      - 'traefik.http.routers.itflow-app-secure.service=itflow-app'
+      - 'traefik.http.services.itflow-app.loadbalancer.server.port=8080'
+
   db:
     image: mariadb:latest
     container_name: itflow-db
@@ -53,6 +72,7 @@ services:
       MARIADB_USER: ${DB_USER_NAME:-itflowuser}
       MARIADB_PASSWORD: ${DB_USER_PASS:-changeme_db_password}
       MARIADB_RANDOM_ROOT_PASSWORD: true
+      CONTAINER_NAME: itflow-db
     volumes:
       - './volumes/data/db/mariadb/itflow:/var/lib/mysql:rw'
     networks:
@@ -62,3 +82,7 @@ networks:
   itflow:
     name: itflow
     external: false
+  proxy:
+    external: true
+  cloudflare:
+    external: true
